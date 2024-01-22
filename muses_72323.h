@@ -8,6 +8,10 @@ extern "C" {
     #include <stdint.h>
     #include <stdbool.h>
 
+  // Volume-boundaries
+  #define MUSES_72323_MIN_ATTENUATION 0x20
+  #define MUSES_72323_MAX_ATTENUATION 0x1DF
+
     typedef uint16_t muses_72323_command_t; // A command to be sent via SPI
     typedef uint8_t muses_72323_chip_address_t; // Address one of the [0..3] chips on same SPI line
     typedef uint8_t muses_72323_channel_gain_t; // [0..7] times 3dB gain per channel
