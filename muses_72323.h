@@ -42,7 +42,7 @@ extern "C" {
     *
     * @return 16-bit command to be sent to MUSES 72323.
     */
-    const muses_72323_command_t muses_72323_configure(const muses_72323_chip_address_t chip_address, const uint8_t zero_window, const uint8_t clock_divider, const bool soft_step_clock);
+    const muses_72323_command_t muses_72323_configure(const muses_72323_chip_address_t chip_address, const muses_72323_zero_window_t zero_window, const muses_72323_soft_step_clock_divider_t clock_divider, const bool soft_step_clock);
 
     /**
     * Set channel-gain.
