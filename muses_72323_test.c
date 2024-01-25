@@ -135,7 +135,7 @@ void test_mute(void) {
   assert(command == 0b1111111110000000);
 }
 
-void
+int
 main (void)
 {
   fprintf (stderr, "Starting tests ...\n");

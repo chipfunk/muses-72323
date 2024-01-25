@@ -1,3 +1,5 @@
+CFLAGS += -Wall
+
 all: clean test
 
 clean:
