@@ -1,5 +1,6 @@
 CFLAGS += -Wall
 CFLAGS += -Werror
+CFLAGS += -Wextra
 
 all: clean test
 

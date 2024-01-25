@@ -38,7 +38,7 @@ static muses_72323_command_t _muses_72323_prepare_command(const muses_72323_chip
     return command;
 }
 
-const muses_72323_command_t muses_72323_configure(const muses_72323_chip_address_t chip_address, const muses_72323_zero_window_t zero_window, const muses_72323_soft_step_clock_divider_t clock_divider, const bool soft_step_clock) {
+muses_72323_command_t muses_72323_configure(const muses_72323_chip_address_t chip_address, const muses_72323_zero_window_t zero_window, const muses_72323_soft_step_clock_divider_t clock_divider, const bool soft_step_clock) {
     muses_72323_command_t command = _muses_72323_prepare_command(chip_address, MUSES_72323_SELECT_ADDRESS_CONFIGURE);
 
     command |= MUSES_72323_BITMASK_ZERO_WINDOW & zero_window << 13;
@@ -48,7 +48,7 @@ const muses_72323_command_t muses_72323_configure(const muses_72323_chip_address
     return command;
 }
 
-const muses_72323_command_t muses_72323_set_gain(const muses_72323_chip_address_t chip_address, const muses_72323_channel_gain_t left, const muses_72323_channel_gain_t right, const bool l_r_control, const bool zero_cross) {
+muses_72323_command_t muses_72323_set_gain(const muses_72323_chip_address_t chip_address, const muses_72323_channel_gain_t left, const muses_72323_channel_gain_t right, const bool l_r_control, const bool zero_cross) {
     muses_72323_command_t command = _muses_72323_prepare_command(chip_address, MUSES_72323_SELECT_ADDRESS_GAIN);
 
     if (l_r_control) command |= MUSES_72323_BITMASK_L_R_CONT & 0x01 << 15;
@@ -70,7 +70,7 @@ const muses_72323_command_t muses_72323_set_gain(const muses_72323_chip_address_
     return command;
 }
 
-const muses_72323_command_t muses_72323_set_volume(const muses_72323_chip_address_t chip_address, const muses_72323_channel_t channel, const muses_72323_attenuation_t attenuation, const bool soft_step) {
+muses_72323_command_t muses_72323_set_volume(const muses_72323_chip_address_t chip_address, const muses_72323_channel_t channel, const muses_72323_attenuation_t attenuation, const bool soft_step) {
     muses_72323_command_t command;
 
     if(channel == MUSES_72323_CHANNEL_LEFT) {
@@ -92,7 +92,7 @@ const muses_72323_command_t muses_72323_set_volume(const muses_72323_chip_addres
     return command;
 }
 
-const muses_72323_command_t muses_72323_mute(const muses_72323_chip_address_t chip_address, const muses_72323_channel_t channel, const bool soft_step) {
+muses_72323_command_t muses_72323_mute(const muses_72323_chip_address_t chip_address, const muses_72323_channel_t channel, const bool soft_step) {
   muses_72323_command_t command;
 
   if(channel == MUSES_72323_CHANNEL_LEFT) {
