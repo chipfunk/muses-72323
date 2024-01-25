@@ -71,7 +71,13 @@ const muses_72323_command_t muses_72323_set_gain(const muses_72323_chip_address_
 }
 
 const muses_72323_command_t muses_72323_set_volume(const muses_72323_chip_address_t chip_address, const muses_72323_channel_t channel, const muses_72323_attenuation_t attenuation, const bool soft_step) {
-    muses_72323_command_t command = _muses_72323_prepare_command(chip_address, channel);
+    muses_72323_command_t command;
+
+    if(channel == MUSES_72323_CHANNEL_LEFT) {
+	command = _muses_72323_prepare_command(chip_address, MUSES_72323_SELECT_ADDRESS_CHANNEL_LEFT);
+    } else {
+	command = _muses_72323_prepare_command(chip_address, MUSES_72323_SELECT_ADDRESS_CHANNEL_RIGHT);
+    }
 
     if (attenuation < MUSES_72323_MIN_ATTENUATION) {
         command |= MUSES_72323_BITMASK_CHANNEL_VOLUME & MUSES_72323_MIN_ATTENUATION << 7;
@@ -87,7 +93,13 @@ const muses_72323_command_t muses_72323_set_volume(const muses_72323_chip_addres
 }
 
 const muses_72323_command_t muses_72323_mute(const muses_72323_chip_address_t chip_address, const muses_72323_channel_t channel, const bool soft_step) {
-    muses_72323_command_t command = _muses_72323_prepare_command(chip_address, channel);
+  muses_72323_command_t command;
+
+  if(channel == MUSES_72323_CHANNEL_LEFT) {
+      command = _muses_72323_prepare_command(chip_address, MUSES_72323_SELECT_ADDRESS_CHANNEL_LEFT);
+  } else {
+      command = _muses_72323_prepare_command(chip_address, MUSES_72323_SELECT_ADDRESS_CHANNEL_RIGHT);
+  }
 
     command |= MUSES_72323_BITMASK_CHANNEL_VOLUME & MUSES_72323_MUTE << 7;
 

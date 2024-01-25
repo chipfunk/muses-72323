@@ -28,8 +28,8 @@ extern "C" {
     } _muses_72323_select_address_t;
 
     typedef enum MUSES_72323_CHANNEL {
-        MUSES_72323_CHANNEL_LEFT = MUSES_72323_SELECT_ADDRESS_CHANNEL_LEFT,
-        MUSES_72323_CHANNEL_RIGHT = MUSES_72323_SELECT_ADDRESS_CHANNEL_RIGHT,
+        MUSES_72323_CHANNEL_LEFT = 0x00,
+        MUSES_72323_CHANNEL_RIGHT = 0x01,
     } muses_72323_channel_t;
 
     /**
