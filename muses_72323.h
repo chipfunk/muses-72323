@@ -59,7 +59,7 @@ extern "C" {
     *
     * @return 16-bit command to be sent to MUSES 72323.
     */
-    const muses_72323_command_t muses_72323_set_volume(const muses_72323_chip_address_t chip_address, const muses_72323_channel_t channel, const muses_72323_attenuation_t attenutaion, const bool soft_step);
+    const muses_72323_command_t muses_72323_set_volume(const muses_72323_chip_address_t chip_address, const muses_72323_channel_t channel, const muses_72323_attenuation_t attenuation, const bool soft_step);
 
     /**
     * Mute a channel. Un-mute it by setting a volume.

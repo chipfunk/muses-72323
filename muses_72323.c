@@ -78,15 +78,15 @@ const muses_72323_command_t muses_72323_set_gain(const muses_72323_chip_address_
     return command;
 }
 
-const muses_72323_command_t muses_72323_set_volume(const muses_72323_chip_address_t chip_address, const muses_72323_channel_t channel, const muses_72323_attenuation_t attenutaion, const bool soft_step) {
+const muses_72323_command_t muses_72323_set_volume(const muses_72323_chip_address_t chip_address, const muses_72323_channel_t channel, const muses_72323_attenuation_t attenuation, const bool soft_step) {
     muses_72323_command_t command = _muses_72323_prepare_command(chip_address, channel);
 
-    if (attenutaion < MUSES_72323_MIN_ATTENUATION) {
+    if (attenuation < MUSES_72323_MIN_ATTENUATION) {
         command |= MUSES_72323_BITMASK_CHANNEL_VOLUME & MUSES_72323_MIN_ATTENUATION << 7;
-    } else if (attenutaion > MUSES_72323_MAX_ATTENUATION) {
+    } else if (attenuation > MUSES_72323_MAX_ATTENUATION) {
         command |= MUSES_72323_BITMASK_CHANNEL_VOLUME & MUSES_72323_MAX_ATTENUATION << 7;
     } else {
-        command |= MUSES_72323_BITMASK_CHANNEL_VOLUME & attenutaion << 7;
+        command |= MUSES_72323_BITMASK_CHANNEL_VOLUME & attenuation << 7;
     }
 
     if (soft_step) command |= MUSES_72323_BITMASK_SOFT_STEP & 0x01 << 4;
