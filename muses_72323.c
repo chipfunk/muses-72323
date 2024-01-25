@@ -24,7 +24,7 @@
 // 2 bits chip-address
 #define MUSES_72323_MAX_SELECT_ADDR 0x03
 
-#define MUSES_72323_MUTE 0xFF
+#define MUSES_72323_MUTE 0x1FF
 
 // Chip provides amplifications in 8 steps of 3dB
 #define MUSES_72323_MAX_CHANNEL_GAIN 0x07

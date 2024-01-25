@@ -124,6 +124,17 @@ test_set_volume ()
   assert(command == 0b1110111110010010);
 }
 
+void test_mute(void) {
+  muses_72323_chip_address_t chip_address = 0x00;
+  muses_72323_channel_t channel = MUSES_72323_CHANNEL_LEFT;
+  bool soft_step = false;
+
+  muses_72323_command_t command;
+
+  command = muses_72323_mute( chip_address, channel, soft_step);
+  assert(command == 0b1111111110000000);
+}
+
 void
 main (void)
 {
@@ -132,6 +143,7 @@ main (void)
   test_configure ();
   test_set_gain ();
   test_set_volume ();
+  test_mute ();
 
   fprintf (stderr, "... all good\n");
 }
