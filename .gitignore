@@ -1,0 +1,8 @@
+# eclipse project files
+.cproject
+.project
+.settings/
+
+# test-executable
+muses_72323_test
+
