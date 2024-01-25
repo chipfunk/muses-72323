@@ -1,4 +1,5 @@
 CFLAGS += -Wall
+CFLAGS += -Werror
 
 all: clean test
 
