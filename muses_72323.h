@@ -19,9 +19,17 @@ extern "C" {
     typedef uint8_t muses_72323_soft_step_clock_divider_t;
     typedef int16_t muses_72323_attenuation_t; // volume-attenuation in 0.25dB steps [32..512]
 
+    // List possible commands to send
+    typedef enum MUSES_72323_SELECT_ADDRESS {
+        MUSES_72323_SELECT_ADDRESS_CHANNEL_LEFT = 0x00,
+        MUSES_72323_SELECT_ADDRESS_CHANNEL_RIGHT = 0x01,
+        MUSES_72323_SELECT_ADDRESS_GAIN = 0x02,
+        MUSES_72323_SELECT_ADDRESS_CONFIGURE = 0x03,
+    } _muses_72323_select_address_t;
+
     typedef enum MUSES_72323_CHANNEL {
-        MUSES_72323_CHANNEL_LEFT = 0x00, // Equals select-address 0x00
-        MUSES_72323_CHANNEL_RIGHT = 0x01, // Equals select-address 0x01
+        MUSES_72323_CHANNEL_LEFT = MUSES_72323_SELECT_ADDRESS_CHANNEL_LEFT,
+        MUSES_72323_CHANNEL_RIGHT = MUSES_72323_SELECT_ADDRESS_CHANNEL_RIGHT,
     } muses_72323_channel_t;
 
     /**

@@ -1,13 +1,5 @@
 #include "muses_72323.h"
 
-// List possible commands to send
-typedef enum MUSES_72323_SELECT_ADDRESS {
-    MUSES_72323_SELECT_ADDRESS_CHANNEL_LEFT = 0x00,
-    MUSES_72323_SELECT_ADDRESS_CHANNEL_RIGHT = 0x01,
-    MUSES_72323_SELECT_ADDRESS_GAIN = 0x02,
-    MUSES_72323_SELECT_ADDRESS_CONFIGURE = 0x03,
-} _muses_72323_select_address_t;
-
 /**
  * Mask relevant bits in MUSES 72323 commands
  */
