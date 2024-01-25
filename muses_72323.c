@@ -46,7 +46,7 @@ static muses_72323_command_t _muses_72323_prepare_command(const muses_72323_chip
     return command;
 }
 
-const muses_72323_command_t muses_72323_configure(const muses_72323_chip_address_t chip_address, const uint8_t zero_window, const uint8_t clock_divider, const bool soft_step_clock) {
+const muses_72323_command_t muses_72323_configure(const muses_72323_chip_address_t chip_address, const muses_72323_zero_window_t zero_window, const muses_72323_soft_step_clock_divider_t clock_divider, const bool soft_step_clock) {
     muses_72323_command_t command = _muses_72323_prepare_command(chip_address, MUSES_72323_SELECT_ADDRESS_CONFIGURE);
 
     command |= MUSES_72323_BITMASK_ZERO_WINDOW & zero_window << 13;

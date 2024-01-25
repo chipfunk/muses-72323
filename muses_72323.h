@@ -15,6 +15,7 @@ extern "C" {
     typedef uint16_t muses_72323_command_t; // A command to be sent via SPI
     typedef uint8_t muses_72323_chip_address_t; // Address one of the [0..3] chips on same SPI line
     typedef uint8_t muses_72323_channel_gain_t; // [0..7] times 3dB gain per channel
+    typedef uint8_t muses_72323_zero_window_t;
     typedef uint8_t muses_72323_soft_step_clock_divider_t;
     typedef int16_t muses_72323_attenuation_t; // volume-attenuation in 0.25dB steps [32..512]
 
