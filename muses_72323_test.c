@@ -9,8 +9,8 @@
 
 #include "muses_72323.h"
 
-/*
- * Lost of bitmasks
+/**
+ * List of bitmasks for command-bits
  *
  * All commands
  * 0b0000000000001100 - select-address
@@ -124,14 +124,16 @@ test_set_volume ()
   assert(command == 0b1110111110010010);
 }
 
-void test_mute(void) {
+void
+test_mute (void)
+{
   muses_72323_chip_address_t chip_address = 0x00;
   muses_72323_channel_t channel = MUSES_72323_CHANNEL_LEFT;
   bool soft_step = false;
 
   muses_72323_command_t command;
 
-  command = muses_72323_mute( chip_address, channel, soft_step);
+  command = muses_72323_mute (chip_address, channel, soft_step);
   assert(command == 0b1111111110000000);
 }
 
