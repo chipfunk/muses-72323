@@ -1,6 +1,6 @@
 # MUSES 72323
 
-This C-library generates commands to control a MUSES 72323 via SPI.
+This C-library generates commands to control a MUSES 72323.
 
 
 ## Integration
@@ -8,38 +8,44 @@ This C-library generates commands to control a MUSES 72323 via SPI.
 To integrate this library into your project:
 
 - include "muses_72327.h"
-- implement a function to send the generated commands via SPI
+- implement a function to send the generated commands via GPIO / SPI / ...
 - generate the appropriate command to control the chip
-- send the generated command via SPI by calling your provided function
+- send the generated command by calling your send()-function
 
 
 ### Code-Example
 
-    // include library
     #include "muses_72327.h"
 
     /**
-     * @TODO implement
+     * @TODO implement this for your platform
      *
-     * Send @param command via SPI.
+     * Send @param command to send
      */
-    void MY_SPI_SEND(muses_72327_command_t command) {
+    void MUSES_SEND(muses_72327_command_t command) {
+        MUSES_PIN_LATCH_SetLow();
         ...
-        spi_send(command);
+        MUSES_PIN_DATA_OUT_send(high_byte(command));
+        MUSES_PIN_DATA_OUT_send(low_byte(command));
+        ...
+        MUSES_PIN_LATCH_SetHigh();
+        ...
+    }
+    
+    ...
+
+    muses_72323_chip_address_t chip_address = 0;
+    muses_72323_channel_t channel = MUSES_72323_CHANEL_LEFT;
+    muses_72323_attenuation_t volume = 32;
+    bool zero_cross = false;
+
+    muses_72327_command_t command;
+    muses_72323_error_t error = muses_72323_set_volume(&command, chip_addr, channel, volume, zero_cross);
+    if(error) {
         ...
     }
 
-    // Configure command
-    muses_72323_chip_address_t chip_address = 0;
-    muses_72323_channel_t channel = MUSES_72323_CHANEL_LEFT;
-    muses_72323_attenuation_t volume = 0;
-    bool zero_cross = false;
-
-    // Generate command
-    muses_72327_command_t command = muses_72323_set_volume(chip_addr, channel, volume, zero_cross);
-
-    // Send command
-    MY_SPI_SEND(command);
+    MUSES_SEND(command);
 
 
 ## Something missing or wrong?

@@ -1,7 +1,7 @@
 #include "muses_72323.h"
 
-// List possible commands to send
-typedef enum MUSES_72323_SELECT_ADDRESS
+/** List of possible command identifiers */
+typedef enum
 {
   MUSES_72323_SELECT_ADDRESS_CHANNEL_LEFT = 0x00,
   MUSES_72323_SELECT_ADDRESS_CHANNEL_RIGHT = 0x01,
@@ -9,9 +9,7 @@ typedef enum MUSES_72323_SELECT_ADDRESS
   MUSES_72323_SELECT_ADDRESS_CONFIGURE = 0x03,
 } _muses_72323_select_address_t;
 
-/**
- * Mask relevant bits in MUSES 72323 commands
- */
+/** Bitmasks */
 #define MUSES_72323_BITMASK_SELECT_ADDRESS 0x000C
 #define MUSES_72323_BITMASK_CHIP_ADDRESS 0x0003
 
@@ -27,16 +25,11 @@ typedef enum MUSES_72323_SELECT_ADDRESS
 #define MUSES_72323_BITMASK_CLK_DIV 0x01C0
 #define MUSES_72323_BITMASK_SS_CLK 0x0200
 
-// 2 bits chip-address
-#define MUSES_72323_MAX_CHIP_ADDR 0x03
+/** Chip provides amplifications in 8 steps of 3dB */
+#define MUSES_72323_MAX_CHANNEL_GAIN 7
 
-// 2 bits chip-address
-#define MUSES_72323_MAX_SELECT_ADDR 0x03
-
+/** Set this value to mute a channel */
 #define MUSES_72323_MUTE 0x1FF
-
-// Chip provides amplifications in 8 steps of 3dB
-#define MUSES_72323_MAX_CHANNEL_GAIN 0x07
 
 /**
  * Prepare command to be sent.
@@ -46,136 +39,128 @@ typedef enum MUSES_72323_SELECT_ADDRESS
  *
  * \return a command with selected chip- and select-address
  */
-static muses_72323_command_t
+static muses_72323_error_t
 _muses_72323_prepare_command (
+    muses_72323_command_t *command,
     const muses_72323_chip_address_t chip_address,
     const _muses_72323_select_address_t select_address)
 {
-  muses_72323_command_t command = 0x00;
+  if (chip_address > MUSES_72323_MAX_CHIP_ADDR)
+    return MUSES_72323_ERROR_CHIP_ADDRESS_GREATER_THAN_MAX;
 
-  command |= MUSES_72323_BITMASK_SELECT_ADDRESS & select_address << 2;
-  command |= MUSES_72323_BITMASK_CHIP_ADDRESS & chip_address;
+  *command = 0x00;
 
-  return command;
+  *command |= MUSES_72323_BITMASK_SELECT_ADDRESS & select_address << 2;
+  *command |= MUSES_72323_BITMASK_CHIP_ADDRESS & chip_address;
+
+  return MUSES_72323_ERROR_NONE;
 }
 
-muses_72323_command_t
+muses_72323_error_t
 muses_72323_configure (
+    muses_72323_command_t *command,
     const muses_72323_chip_address_t chip_address,
     const muses_72323_zero_window_t zero_window,
     const muses_72323_soft_step_clock_divider_t clock_divider,
     const bool soft_step_clock)
 {
-  muses_72323_command_t command = _muses_72323_prepare_command (
-      chip_address, MUSES_72323_SELECT_ADDRESS_CONFIGURE);
+  muses_72323_error_t error;
+  if ((error = _muses_72323_prepare_command (
+      command, chip_address, MUSES_72323_SELECT_ADDRESS_CONFIGURE)))
+    return error;
 
-  command |= MUSES_72323_BITMASK_ZERO_WINDOW & zero_window << 13;
-  command |= MUSES_72323_BITMASK_CLK_DIV & clock_divider << 10;
+  if (zero_window > MUSES_72323_MAX_ZERO_WINDOW)
+    return MUSES_72323_ERROR_ZERO_WINDOW_GREATER_THAN_MAX;
+
+  if (clock_divider > MUSES_72323_MAX_CLOCK_DIVIDER)
+    return MUSES_72323_ERROR_CLOCK_DIVIDER_GREATER_THAN_MAX;
+
+  *command |= MUSES_72323_BITMASK_ZERO_WINDOW & zero_window << 13;
+  *command |= MUSES_72323_BITMASK_CLK_DIV & clock_divider << 10;
+
   if (soft_step_clock)
-    command |= MUSES_72323_BITMASK_SS_CLK & 0x01 << 9;
+    *command |= MUSES_72323_BITMASK_SS_CLK & 0x01 << 9;
 
-  return command;
+  return MUSES_72323_ERROR_NONE;
 }
 
-muses_72323_command_t
-muses_72323_set_gain (const muses_72323_chip_address_t chip_address,
+muses_72323_error_t
+muses_72323_set_gain (muses_72323_command_t *command,
+		      const muses_72323_chip_address_t chip_address,
 		      const muses_72323_channel_gain_t left,
 		      const muses_72323_channel_gain_t right,
 		      const bool l_r_control, const bool zero_cross)
 {
-  muses_72323_command_t command = _muses_72323_prepare_command (
-      chip_address, MUSES_72323_SELECT_ADDRESS_GAIN);
-
-  if (l_r_control)
-    command |= MUSES_72323_BITMASK_L_R_CONT & 0x01 << 15;
+  muses_72323_error_t error;
+  if ((error = _muses_72323_prepare_command (command, chip_address,
+					     MUSES_72323_SELECT_ADDRESS_GAIN)))
+    return error;
 
   if (left > MUSES_72323_MAX_CHANNEL_GAIN)
-    {
-      command |= MUSES_72323_BITMASK_LEFT_CHANNEL_GAIN
-	  & MUSES_72323_MAX_CHANNEL_GAIN << 12;
-    }
-  else
-    {
-      command |= MUSES_72323_BITMASK_LEFT_CHANNEL_GAIN & left << 12;
-    }
+    return MUSES_72323_ERROR_CHANNEL_GAIN_GREATER_THAN_MAX;
 
   if (right > MUSES_72323_MAX_CHANNEL_GAIN)
-    {
-      command |= MUSES_72323_BITMASK_RIGHT_CHANNEL_GAIN
-	  & MUSES_72323_MAX_CHANNEL_GAIN << 9;
-    }
-  else
-    {
-      command |= MUSES_72323_BITMASK_RIGHT_CHANNEL_GAIN & right << 9;
-    }
+    return MUSES_72323_ERROR_CHANNEL_GAIN_GREATER_THAN_MAX;
+
+  if (l_r_control)
+    *command |= MUSES_72323_BITMASK_L_R_CONT & 0x01 << 15;
+
+  *command |= MUSES_72323_BITMASK_LEFT_CHANNEL_GAIN & left << 12;
+  *command |= MUSES_72323_BITMASK_RIGHT_CHANNEL_GAIN & right << 9;
 
   if (zero_cross)
-    command |= MUSES_72323_BITMASK_ZERO_CROSS & 0x01 << 8;
+    *command |= MUSES_72323_BITMASK_ZERO_CROSS & 0x01 << 8;
 
-  return command;
+  return MUSES_72323_ERROR_NONE;
 }
 
-muses_72323_command_t
-muses_72323_set_volume (const muses_72323_chip_address_t chip_address,
+muses_72323_error_t
+muses_72323_set_volume (muses_72323_command_t *command,
+			const muses_72323_chip_address_t chip_address,
 			const muses_72323_channel_t channel,
 			const muses_72323_attenuation_t attenuation,
 			const bool soft_step)
 {
-  muses_72323_command_t command;
+  if (attenuation > MUSES_72323_MAX_ATTENUATION)
+    return MUSES_72323_ERROR_ATTENUTION_GREATER_THAN_MAX;
 
+  _muses_72323_select_address_t select_addr;
   if (channel == MUSES_72323_CHANNEL_LEFT)
-    {
-      command = _muses_72323_prepare_command (
-	  chip_address, MUSES_72323_SELECT_ADDRESS_CHANNEL_LEFT);
-    }
+    select_addr = MUSES_72323_SELECT_ADDRESS_CHANNEL_LEFT;
   else
-    {
-      command = _muses_72323_prepare_command (
-	  chip_address, MUSES_72323_SELECT_ADDRESS_CHANNEL_RIGHT);
-    }
+    select_addr = MUSES_72323_SELECT_ADDRESS_CHANNEL_RIGHT;
 
-  if (attenuation < MUSES_72323_MIN_ATTENUATION)
-    {
-      command |= MUSES_72323_BITMASK_CHANNEL_VOLUME
-	  & MUSES_72323_MIN_ATTENUATION << 7;
-    }
-  else if (attenuation > MUSES_72323_MAX_ATTENUATION)
-    {
-      command |= MUSES_72323_BITMASK_CHANNEL_VOLUME
-	  & MUSES_72323_MAX_ATTENUATION << 7;
-    }
-  else
-    {
-      command |= MUSES_72323_BITMASK_CHANNEL_VOLUME & attenuation << 7;
-    }
+  muses_72323_error_t error;
+  if ((error = _muses_72323_prepare_command (command, chip_address, select_addr)))
+    return error;
+
+  *command |= MUSES_72323_BITMASK_CHANNEL_VOLUME & (0x20 + attenuation) << 7;
 
   if (soft_step)
-    command |= MUSES_72323_BITMASK_SOFT_STEP & 0x01 << 4;
+    *command |= MUSES_72323_BITMASK_SOFT_STEP & 0x01 << 4;
 
-  return command;
+  return MUSES_72323_ERROR_NONE;
 }
 
-muses_72323_command_t
-muses_72323_mute (const muses_72323_chip_address_t chip_address,
+muses_72323_error_t
+muses_72323_mute (muses_72323_command_t *command,
+		  const muses_72323_chip_address_t chip_address,
 		  const muses_72323_channel_t channel, const bool soft_step)
 {
-  muses_72323_command_t command;
-
+  _muses_72323_select_address_t select_addr;
   if (channel == MUSES_72323_CHANNEL_LEFT)
-    {
-      command = _muses_72323_prepare_command (
-	  chip_address, MUSES_72323_SELECT_ADDRESS_CHANNEL_LEFT);
-    }
+    select_addr = MUSES_72323_SELECT_ADDRESS_CHANNEL_LEFT;
   else
-    {
-      command = _muses_72323_prepare_command (
-	  chip_address, MUSES_72323_SELECT_ADDRESS_CHANNEL_RIGHT);
-    }
+    select_addr = MUSES_72323_SELECT_ADDRESS_CHANNEL_RIGHT;
 
-  command |= MUSES_72323_BITMASK_CHANNEL_VOLUME & MUSES_72323_MUTE << 7;
+  muses_72323_error_t error;
+  if ((error = _muses_72323_prepare_command (command, chip_address, select_addr)))
+    return error;
+
+  *command |= MUSES_72323_BITMASK_CHANNEL_VOLUME & MUSES_72323_MUTE << 7;
 
   if (soft_step)
-    command |= MUSES_72323_BITMASK_SOFT_STEP & 0x01 << 4;
+    *command |= MUSES_72323_BITMASK_SOFT_STEP & 0x01 << 4;
 
-  return command;
+  return MUSES_72323_ERROR_NONE;
 }
