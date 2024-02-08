@@ -14,7 +14,7 @@
 #define MUSES_72323_MAX_CHIP_ADDR 3
 
 /** \define Upper clock-divider boundary */
-#define MUSES_72323_MAX_CLOCK_DIVIDER 3
+#define MUSES_72323_MAX_CLOCK_DIVIDER 7
 
 /** \define Upper zero-window boundary */
 #define MUSES_72323_MAX_ZERO_WINDOW 3
