@@ -36,11 +36,11 @@ To integrate this library into your project:
 
     muses_72323_chip_address_t chip_address = 0;
     muses_72323_channel_t channel = MUSES_72323_CHANEL_LEFT;
-    muses_72323_attenuation_t volume = 32;
-    bool zero_cross = false;
+    muses_72323_attenuation_t volume = 0;
+    bool use_zero_cross = false;
 
     muses_72327_command_t command;
-    muses_72323_error_t error = muses_72323_set_volume(&command, chip_addr, channel, volume, zero_cross);
+    muses_72323_error_t error = muses_72323_set_volume(&command, chip_addr, channel, volume, use_zero_cross);
     if(error) {
         ...
     }
