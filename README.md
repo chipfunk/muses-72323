@@ -20,6 +20,11 @@ To integrate this library into your project:
     /**
      * @TODO implement this for your platform
      *
+     * Remember to 
+     * - send most-significant bit first
+     * - pull latch low
+     * - send high-byte first
+     *
      * Send @param command to send
      */
     void MUSES_SEND(muses_72327_command_t command) {
@@ -29,7 +34,6 @@ To integrate this library into your project:
         MUSES_PIN_DATA_OUT_send(low_byte(command));
         ...
         MUSES_PIN_LATCH_SetHigh();
-        ...
     }
     
     ...

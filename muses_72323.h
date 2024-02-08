@@ -19,21 +19,27 @@
 /** \define Upper zero-window boundary */
 #define MUSES_72323_MAX_ZERO_WINDOW 3
 
-/** Possible errors */
-typedef enum
-{
-  MUSES_72323_ERROR_NONE = 0,
-  MUSES_72323_ERROR_CHIP_ADDRESS_GREATER_THAN_MAX,
-  MUSES_72323_ERROR_ATTENUTION_GREATER_THAN_MAX,
-  MUSES_72323_ERROR_CHANNEL_GAIN_GREATER_THAN_MAX,
-  MUSES_72323_ERROR_CLOCK_DIVIDER_GREATER_THAN_MAX,
-  MUSES_72323_ERROR_ZERO_WINDOW_GREATER_THAN_MAX,
-} muses_72323_error_t;
-
 #ifdef	__cplusplus
 extern "C"
 {
 #endif
+
+  /** Possible errors */
+  typedef enum
+  {
+    MUSES_72323_ERROR_NONE = 0,
+    MUSES_72323_ERROR_CHIP_ADDRESS_GREATER_THAN_MAX,
+    MUSES_72323_ERROR_ATTENUTION_GREATER_THAN_MAX,
+    MUSES_72323_ERROR_CHANNEL_GAIN_GREATER_THAN_MAX,
+    MUSES_72323_ERROR_CLOCK_DIVIDER_GREATER_THAN_MAX,
+    MUSES_72323_ERROR_ZERO_WINDOW_GREATER_THAN_MAX,
+  } muses_72323_error_t;
+
+  typedef enum
+  {
+    MUSES_72323_SOFT_STEP_CLOCK_EXTERNAL = 0x00,
+    MUSES_72323_SOFT_STEP_CLOCK_INTERNAL = 0x01,
+  } muses_72323_soft_step_clock_source_t;
 
   /** \typedef A command to be sent via SPI */
   typedef uint16_t muses_72323_command_t;
@@ -78,7 +84,7 @@ extern "C"
       const muses_72323_chip_address_t chip_address,
       const muses_72323_zero_window_t zero_window,
       const muses_72323_soft_step_clock_divider_t clock_divider,
-      const bool soft_step_clock);
+      const muses_72323_soft_step_clock_source_t soft_step_clock);
 
   /**
    * \func Set channel-gain.
@@ -89,7 +95,7 @@ extern "C"
    * \param chip_address The chip-address to send command to
    * \param left The left channel gain
    * \param right The right channel gain
-   * \param l_r_control Link L/R channels
+   * \param link_channels Link L/R channels
    * \param zero_cross Use zero-cross
    *
    * \return 16-bit command to be sent to MUSES 72323.
@@ -99,7 +105,7 @@ extern "C"
 			const muses_72323_chip_address_t chip_address,
 			const muses_72323_channel_gain_t left,
 			const muses_72323_channel_gain_t right,
-			const bool l_r_control, const bool zero_cross);
+			const bool link_channels, const bool use_zero_cross);
 
   /**
    * Set volume per channel.
@@ -108,7 +114,7 @@ extern "C"
    * \param chip_address The chip-address to send command to
    * \param channel The channel-number [0..1] to set volume for
    * \param attenuation The volume-attenuation in -0.25db steps in range [0...480].
-   * \param soft_step Use soft-step
+   * \param use_soft_step Use soft-step
    *
    * \return zero or error-code on error
    */
@@ -117,7 +123,7 @@ extern "C"
 			  const muses_72323_chip_address_t chip_address,
 			  const muses_72323_channel_t channel,
 			  const muses_72323_attenuation_t attenuation,
-			  const bool soft_step);
+			  const bool use_soft_step);
 
   /**
    * Mute a channel. Un-mute it by setting a volume.
@@ -125,14 +131,15 @@ extern "C"
    * \param command The memory-address to write generated command to
    * \param chip_address The chip-address to send command to
    * \param channel The channel-number [0..1] to set volume for
-   * \param soft_step Use soft-step
+   * \param use_soft_step Use soft-step
    *
    * \return 16-bit command to be sent to MUSES 72323.
    */
   muses_72323_error_t
   muses_72323_mute (muses_72323_command_t *command,
 		    const muses_72323_chip_address_t chip_address,
-		    const muses_72323_channel_t channel, const bool soft_step);
+		    const muses_72323_channel_t channel,
+		    const bool use_soft_step);
 
 #ifdef	__cplusplus
 }

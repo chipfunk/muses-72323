@@ -25,9 +25,6 @@ typedef enum
 #define MUSES_72323_BITMASK_CLK_DIV 0x01C0
 #define MUSES_72323_BITMASK_SS_CLK 0x0200
 
-/** Chip provides amplifications in 8 steps of 3dB */
-#define MUSES_72323_MAX_CHANNEL_GAIN 7
-
 /** Set this value to mute a channel */
 #define MUSES_72323_MUTE 0x1FF
 
@@ -62,7 +59,7 @@ muses_72323_configure (
     const muses_72323_chip_address_t chip_address,
     const muses_72323_zero_window_t zero_window,
     const muses_72323_soft_step_clock_divider_t clock_divider,
-    const bool soft_step_clock)
+    const muses_72323_soft_step_clock_source_t soft_step_clock)
 {
   muses_72323_error_t error;
   if ((error = _muses_72323_prepare_command (
@@ -78,8 +75,7 @@ muses_72323_configure (
   *command |= MUSES_72323_BITMASK_ZERO_WINDOW & zero_window << 13;
   *command |= MUSES_72323_BITMASK_CLK_DIV & clock_divider << 10;
 
-  if (soft_step_clock)
-    *command |= MUSES_72323_BITMASK_SS_CLK & 0x01 << 9;
+  *command |= MUSES_72323_BITMASK_SS_CLK & soft_step_clock << 9;
 
   return MUSES_72323_ERROR_NONE;
 }
@@ -89,7 +85,7 @@ muses_72323_set_gain (muses_72323_command_t *command,
 		      const muses_72323_chip_address_t chip_address,
 		      const muses_72323_channel_gain_t left,
 		      const muses_72323_channel_gain_t right,
-		      const bool l_r_control, const bool zero_cross)
+		      const bool link_channels, const bool zero_cross)
 {
   muses_72323_error_t error;
   if ((error = _muses_72323_prepare_command (command, chip_address,
@@ -102,7 +98,7 @@ muses_72323_set_gain (muses_72323_command_t *command,
   if (right > MUSES_72323_MAX_CHANNEL_GAIN)
     return MUSES_72323_ERROR_CHANNEL_GAIN_GREATER_THAN_MAX;
 
-  if (l_r_control)
+  if (link_channels)
     *command |= MUSES_72323_BITMASK_L_R_CONT & 0x01 << 15;
 
   *command |= MUSES_72323_BITMASK_LEFT_CHANNEL_GAIN & left << 12;
@@ -119,7 +115,7 @@ muses_72323_set_volume (muses_72323_command_t *command,
 			const muses_72323_chip_address_t chip_address,
 			const muses_72323_channel_t channel,
 			const muses_72323_attenuation_t attenuation,
-			const bool soft_step)
+			const bool use_soft_step)
 {
   if (attenuation > MUSES_72323_MAX_ATTENUATION)
     return MUSES_72323_ERROR_ATTENUTION_GREATER_THAN_MAX;
@@ -136,7 +132,7 @@ muses_72323_set_volume (muses_72323_command_t *command,
 
   *command |= MUSES_72323_BITMASK_CHANNEL_VOLUME & (0x20 + attenuation) << 7;
 
-  if (soft_step)
+  if (use_soft_step)
     *command |= MUSES_72323_BITMASK_SOFT_STEP & 0x01 << 4;
 
   return MUSES_72323_ERROR_NONE;
@@ -145,7 +141,7 @@ muses_72323_set_volume (muses_72323_command_t *command,
 muses_72323_error_t
 muses_72323_mute (muses_72323_command_t *command,
 		  const muses_72323_chip_address_t chip_address,
-		  const muses_72323_channel_t channel, const bool soft_step)
+		  const muses_72323_channel_t channel, const bool use_soft_step)
 {
   _muses_72323_select_address_t select_addr;
   if (channel == MUSES_72323_CHANNEL_LEFT)
@@ -159,7 +155,7 @@ muses_72323_mute (muses_72323_command_t *command,
 
   *command |= MUSES_72323_BITMASK_CHANNEL_VOLUME & MUSES_72323_MUTE << 7;
 
-  if (soft_step)
+  if (use_soft_step)
     *command |= MUSES_72323_BITMASK_SOFT_STEP & 0x01 << 4;
 
   return MUSES_72323_ERROR_NONE;
