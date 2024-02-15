@@ -56,7 +56,7 @@ extern "C"
   /** \typedef The clock-divider */
   typedef uint8_t muses_72323_soft_step_clock_divider_t;
 
-  /** \typedef volume-attenuation in 0.25dB steps [0..480] */
+  /** \typedef volume-attenuation in 0.25dB steps [0..447] */
   typedef uint16_t muses_72323_attenuation_t;
 
   /**

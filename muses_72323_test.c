@@ -123,6 +123,13 @@ test_set_volume ()
   assert(error == MUSES_72323_ERROR_NONE);
   assert(command == 0b1110111110000000);
 
+  for (muses_72323_attenuation_t att = 0; att < 448; att++)
+    {
+      error = muses_72323_set_volume (&command, chip_address, channel, att,
+				      use_soft_step);
+      assert(error == MUSES_72323_ERROR_NONE);
+    }
+
   use_soft_step = true;
   error = muses_72323_set_volume (&command, chip_address, channel, attenuation,
 				  use_soft_step);
