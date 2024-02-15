@@ -113,7 +113,7 @@ extern "C"
    * \param command The memory-address to write generated command to
    * \param chip_address The chip-address to send command to
    * \param channel The channel-number [0..1] to set volume for
-   * \param attenuation The volume-attenuation in -0.25db steps in range [0...480].
+   * \param attenuation The volume-attenuation in -0.25db steps in range [0...447].
    * \param use_soft_step Use soft-step
    *
    * \return zero or error-code on error
